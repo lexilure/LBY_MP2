@@ -1,28 +1,27 @@
-section .text
+%include "io64.inc"
+
+section.data
+length dq 0
+sdot dot_product_loop 0.0
+output_format db "%lf ",10 ,0
+
+section. bss
+vector_A resq 100
+Vector_B resq 100
+
+section.text
 global main
+extern printf
 
 main:
-    xor rax, rax            ; Clear RAX register for the accumulator
-    mov rbx, vector1        ; Load the address of the first vector into RBX
-    mov rcx, vector2        ; Load the address of the second vector into RCX
-    mov rdx, vector_length  ; Load the length of the vectors into RDX
-    
-dot_product_loop:
-    movq xmm0, [rbx]       ; Load 64 bits (1 element) from vector1 into XMM0
-    movq xmm1, [rcx]       ; Load 64 bits (1 element) from vector2 into XMM1
-    pmulld xmm0, xmm1      ; Multiply the corresponding elements
-    paddd xmm2, xmm0       ; Add the result to accumulator in XMM2
-    add rbx, 8             ; Move to the next element of vector1 (assuming 64-bit integers)
-    add rcx, 8             ; Move to the next element of vector2
-    dec rdx                ; Decrement loop counter
-    jnz dot_product_loop   ; Continue loop if counter is not zero
-    
-    ; At this point, the dot product is stored in xmm2
-    ; Extract the result from xmm2 if needed
+GET_DEC 8, length
+mov rdi,vector_A
+mov rdi, vector_B
 
-    ret
+mov rsi, length
+xor eax,eax
+xorps xmm0,xmm0
 
-section .data
-    vector1 dq 1, 2, 3, 4   ; Example vector 1 (4 elements of 64-bit integers)
-    vector2 dq 5, 6, 7, 8   ; Example vector 2 (4 elements of 64-bit integers)
-    vector_length equ ($ - vector1) / 8  ; Calculate the length of the vectors in elements
+read_vector:
+
+
